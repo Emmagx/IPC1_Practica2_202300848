@@ -13,7 +13,7 @@ import javax.swing.table.TableColumnModel;
 
 public class TableRutes {
     private TripsPanel tripsPanel;
-    private ArrayList<RegistroCSV> registros = new ArrayList<>();
+    ArrayList<RegistroCSV> registros = new ArrayList<>();
     private static File selectedFile;
     public ArrayList<String> inicios = new ArrayList<>();
     public ArrayList<String> finals = new ArrayList<>();
@@ -137,34 +137,35 @@ public class TableRutes {
     }
 
     // Después de cargar los datos, ajustamos el ancho de las columnas
-    ajustarAnchoColumnas();
+    ajustarAnchoColumnas(rutas);
 
         }
-    private void ajustarAnchoColumnas() {
-            // Asegura que el layout de la tabla esté actualizado para medir correctamente el contenido.
-            rutas.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-            final TableColumnModel columnModel = rutas.getColumnModel();
-            for (int columna = 0; columna < rutas.getColumnCount(); columna++) {
-                int anchoMaximo = 50; // Ancho mínimo de la columna
-                for (int fila = 0; fila < rutas.getRowCount(); fila++) {
-                    TableCellRenderer cellRenderer = rutas.getCellRenderer(fila, columna);
-                    Component c = rutas.prepareRenderer(cellRenderer, fila, columna);
-                    int ancho = c.getPreferredSize().width + rutas.getIntercellSpacing().width;
-                    anchoMaximo = Math.max(anchoMaximo, ancho);
-                }
-                // Considera el ancho del encabezado de la columna
-                TableColumn columnaTabla = columnModel.getColumn(columna);
-                TableCellRenderer headerRenderer = columnaTabla.getHeaderRenderer();
-                if (headerRenderer == null) {
-                    headerRenderer = rutas.getTableHeader().getDefaultRenderer();
-                }
-                Component componenteEncabezado = headerRenderer.getTableCellRendererComponent(rutas, columnaTabla.getHeaderValue(), false, false, 0, columna);
-                anchoMaximo = Math.max(anchoMaximo, componenteEncabezado.getPreferredSize().width);
-
-                // Configura el ancho preferido de la columna
-                columnModel.getColumn(columna).setPreferredWidth(anchoMaximo);
+    public void ajustarAnchoColumnas(JTable tabla) {
+        // Asegura que el layout de la tabla esté actualizado para medir correctamente el contenido.
+        tabla.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        final TableColumnModel columnModel = tabla.getColumnModel();
+        for (int columna = 0; columna < tabla.getColumnCount(); columna++) {
+            int anchoMaximo = 50; // Ancho mínimo de la columna
+            for (int fila = 0; fila < tabla.getRowCount(); fila++) {
+                TableCellRenderer cellRenderer = tabla.getCellRenderer(fila, columna);
+                Component c = tabla.prepareRenderer(cellRenderer, fila, columna);
+                int ancho = c.getPreferredSize().width + tabla.getIntercellSpacing().width;
+                anchoMaximo = Math.max(anchoMaximo, ancho);
             }
+            // Considera el ancho del encabezado de la columna
+            TableColumn columnaTabla = columnModel.getColumn(columna);
+            TableCellRenderer headerRenderer = columnaTabla.getHeaderRenderer();
+            if (headerRenderer == null) {
+                headerRenderer = tabla.getTableHeader().getDefaultRenderer();
+            }
+            Component componenteEncabezado = headerRenderer.getTableCellRendererComponent(tabla, columnaTabla.getHeaderValue(), false, false, 0, columna);
+            anchoMaximo = Math.max(anchoMaximo, componenteEncabezado.getPreferredSize().width);
+
+            // Configura el ancho preferido de la columna
+            columnModel.getColumn(columna).setPreferredWidth(anchoMaximo);
         }
+    }
+
 private void llenarTablaDesdeRegistros() {
     inicios.clear();
     finals.clear();
@@ -278,6 +279,9 @@ private void agregarRuta(String inicio, String fin, String distancia) {
     } else {
         JOptionPane.showMessageDialog(this, "No se encontró una ruta con el ID: " + id, "Error", JOptionPane.ERROR_MESSAGE);
     }
+    }
+    public ArrayList<RegistroCSV> getRegistros(){
+        return registros;
     }
 
 }

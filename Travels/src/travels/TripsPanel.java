@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class TripsPanel extends JPanel {
     private JButton btnEmpezarViaje = new JButton("Empezar Viaje");
     private TableRutes tableRutes;
-
+    String puntoInicialSeleccionado, puntoFinalSeleccionado, tipoTransporteSeleccionado;
     public TripsPanel(TableRutes tableRutes) {
         this.tableRutes = tableRutes;
         inicializarComponentes();
@@ -42,8 +42,21 @@ public class TripsPanel extends JPanel {
 
         JButton btnGenerarViaje = new JButton("Generar Viaje");
         btnGenerarViaje.addActionListener(e -> {
+            puntoInicialSeleccionado = (String) cbPuntoInicial.getSelectedItem();
+            puntoFinalSeleccionado = (String) cbPuntoFinal.getSelectedItem();
+            tipoTransporteSeleccionado = (String) cbTipoTransporte.getSelectedItem();
+            System.out.println("Inicio: " + puntoInicialSeleccionado + " Final: " + puntoFinalSeleccionado + " Vehiculo: " + tipoTransporteSeleccionado);
+            if (rutaExiste(puntoInicialSeleccionado, puntoFinalSeleccionado)) {
+            // La ruta existe, puedes seguir con la lógica para generar el viaje
+            System.out.println("Inicio: " + puntoInicialSeleccionado + " Final: " + puntoFinalSeleccionado + " Vehículo: " + tipoTransporteSeleccionado);
             JOptionPane.showMessageDialog(dialog, "Viaje generado correctamente.");
             dialog.dispose(); // Cierra la ventana de diálogo
+            } else {
+            // La ruta no existe, mostrar mensaje de error
+            JOptionPane.showMessageDialog(dialog, "No existe una ruta entre los puntos seleccionados.", "Error", JOptionPane.ERROR_MESSAGE);
+            // No se cierra la ventana de diálogo, permitiendo al usuario intentar de nuevo
+        }
+        
         });
         dialog.add(btnGenerarViaje, gbc);
 
@@ -61,4 +74,13 @@ public class TripsPanel extends JPanel {
         }
         return tipos;
     }
+    private boolean rutaExiste(String inicio, String fin) {
+    for (RegistroCSV registro : tableRutes.registros) {
+        if (registro.getInicio().equals(inicio) && registro.getFin().equals(fin)) {
+            return true; // La ruta existe
+        }
+    }
+    return false; // No se encontró la ruta
+}
+
 }
