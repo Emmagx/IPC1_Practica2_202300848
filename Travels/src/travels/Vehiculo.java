@@ -1,18 +1,22 @@
 package travels;
 
+import javax.swing.ImageIcon;
+
 public class Vehiculo {
     private String tipo;
     private double gastoCombustible; // galones por kilómetro
     private int capacidadTanque; // capacidad en galones
     private double combustibleActual;
     private boolean disponible; // Indica si el vehículo está disponible para un nuevo viaje
+    private ImageIcon imagen; // Imagen para representar visualmente el vehículo
 
-    public Vehiculo(String tipo, double gastoCombustible, int capacidadTanque) {
+    public Vehiculo(String tipo, double gastoCombustible, int capacidadTanque, ImageIcon imagen) {
         this.tipo = tipo;
         this.gastoCombustible = gastoCombustible;
         this.capacidadTanque = capacidadTanque;
         this.combustibleActual = capacidadTanque; // inicialmente el tanque está lleno
         this.disponible = true; // inicialmente todos los vehículos están disponibles
+        this.imagen = imagen;
     }
 
     // Métodos getter y setter
@@ -37,6 +41,10 @@ public class Vehiculo {
         return disponible;
     }
 
+    public ImageIcon getImagen() {
+        return imagen;
+    }
+
     public void setTipo(String tipo) {
         this.tipo = tipo;
     }
@@ -55,6 +63,10 @@ public class Vehiculo {
 
     public void setDisponible(boolean disponible) {
         this.disponible = disponible;
+    }
+
+    public void setImagen(ImageIcon imagen) {
+        this.imagen = imagen;
     }
 
     // Métodos para la simulación de viaje
@@ -78,8 +90,7 @@ public class Vehiculo {
     public void iniciarViaje(double distancia) {
         if (combustibleActual >= distancia * gastoCombustible) {
             consumirCombustible(distancia);
-            // Después de iniciar un viaje, el vehículo no está disponible hasta que se complete el viaje o se cancele
-            setDisponible(false);
+            setDisponible(false); // El vehículo no está disponible hasta que se complete el viaje o se cancele
         } else {
             throw new IllegalStateException("No hay suficiente combustible para el viaje.");
         }
@@ -87,7 +98,6 @@ public class Vehiculo {
 
     // Método para finalizar un viaje
     public void finalizarViaje() {
-        // Marcar el vehículo como disponible nuevamente después de finalizar el viaje
-        setDisponible(true);
+        setDisponible(true); // El vehículo está disponible de nuevo
     }
 }
