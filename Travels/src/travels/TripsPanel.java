@@ -3,14 +3,13 @@ package travels;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+
 public class TripsPanel extends JPanel {
     private JButton btnEmpezarViaje;
     private TableRutes tableRutes;
     private JPanel viajePanel1, viajePanel2, viajePanel3;
-    private SimpleDateFormat sdf = new SimpleDateFormat("MMM dd HH:mm:ss");
+
     private int position = -80; 
     public TripsPanel(TableRutes tableRutes) {
         this.tableRutes = tableRutes;
@@ -62,42 +61,43 @@ public class TripsPanel extends JPanel {
             dialog.setVisible(true);
     }
 
-        private void generarViaje(JComboBox<String> cbPuntoInicial,
-            JComboBox<String> cbPuntoFinal,
-            JComboBox<Vehiculo> cbTipoTransporte,
-            JDialog dialog) {
-            String puntoInicialSeleccionado = (String) cbPuntoInicial.getSelectedItem();
-            String puntoFinalSeleccionado = (String) cbPuntoFinal.getSelectedItem();
-            Vehiculo vehiculoSeleccionado = (Vehiculo) cbTipoTransporte.getSelectedItem();
+private void generarViaje(JComboBox<String> cbPuntoInicial,
+                          JComboBox<String> cbPuntoFinal,
+                          JComboBox<Vehiculo> cbTipoTransporte,
+                          JDialog dialog) {
+    String puntoInicialSeleccionado = (String) cbPuntoInicial.getSelectedItem();
+    String puntoFinalSeleccionado = (String) cbPuntoFinal.getSelectedItem();
+    Vehiculo vehiculoSeleccionado = (Vehiculo) cbTipoTransporte.getSelectedItem();
+    
+    if (rutaExiste(puntoInicialSeleccionado, puntoFinalSeleccionado) && vehiculoSeleccionado != null) {
+        position += 150;
+        int contadorHilo = 1;
+        RegistroCSV ruta = registroID(puntoInicialSeleccionado, puntoFinalSeleccionado);
+        vehiculoSeleccionado.setDisponible(false);
+        actualizarListaVehiculos(cbTipoTransporte);
 
-            if (rutaExiste(puntoInicialSeleccionado, puntoFinalSeleccionado) && vehiculoSeleccionado != null) {
-                position += 130;
-                RegistroCSV ruta = registroID(puntoInicialSeleccionado, puntoFinalSeleccionado);
-                vehiculoSeleccionado.setDisponible(false);
-                actualizarListaVehiculos(cbTipoTransporte);
-                JOptionPane.showMessageDialog(dialog, "Viaje generado correctamente.");
-                dialog.dispose();
-                String fechaHoraActual = sdf.format(new Date());
-                System.out.println("Viaje iniciado en: " + fechaHoraActual);
-                // Aquí deberías agregar el panel del viaje generado a uno de los paneles vacíos
-                JPanel Panel = crearPanelViaje(ruta, vehiculoSeleccionado);
-                add(Panel);
-                Panel.setBounds(0, position, 800, 200);
-                revalidate();
-                repaint();
-            } else {
-                JOptionPane.showMessageDialog(dialog, "No existe una ruta entre los puntos seleccionados.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
+        // Crea un hilo para manejar el viaje
+        Thread viajeThread = new Thread(() -> {
+            JPanel panelViaje = crearPanelViaje(ruta, vehiculoSeleccionado);
+            SwingUtilities.invokeLater(() -> {
+                this.add(panelViaje); // Añade el panel del viaje en el EDT
+                panelViaje.setBounds(0, position, 800, 100);
+                 // Aumenta la posición para el siguiente panel
+                this.revalidate();
+                this.repaint();
+            });
+            
+            System.out.println("Viaje Gerado con exito");
+        }, "Viaje-" + contadorHilo);
+
+        viajeThread.start(); // Inicia el hilo
+        JOptionPane.showMessageDialog(dialog, "Viaje generado correctamente.");
+        dialog.dispose();
+    } else {
+        JOptionPane.showMessageDialog(dialog, "No existe una ruta entre los puntos seleccionados.", "Error", JOptionPane.ERROR_MESSAGE);
     }
+}
         
-    private String[] getTipoTransporteOptions() {
-        ArrayList<Vehiculo> vehiculos = (ArrayList<Vehiculo>) VehiculoManager.getVehiculos();
-        String[] tipos = new String[vehiculos.size()];
-        for (int i = 0; i < vehiculos.size(); i++) {
-            tipos[i] = vehiculos.get(i).getTipo();
-        }
-        return tipos;
-    }
     private boolean rutaExiste(String inicio, String fin) {
         return tableRutes.registros.stream()
                 .anyMatch(registro -> registro.getInicio().equals(inicio) && registro.getFin().equals(fin));
@@ -117,6 +117,8 @@ private JPanel crearPanelViaje(RegistroCSV ruta, Vehiculo vehiculo) {
     JPanel panelViaje = new JPanel();
     JPanel detallesPanel = new JPanel();
     panelViaje.add(detallesPanel);
+    panelViaje.setBackground(Color.WHITE);
+    detallesPanel.setBackground(Color.WHITE);
     ViajeEnCurso animacionViaje = new ViajeEnCurso(vehiculo, ruta.getInicio(), ruta.getFin(), ruta.getDistancia());
     panelViaje.add(animacionViaje);
 
