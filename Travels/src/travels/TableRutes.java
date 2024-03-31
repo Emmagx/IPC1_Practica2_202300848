@@ -11,22 +11,23 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
-public class TableRutes {
-    private TripsPanel tripsPanel;
+public class TableRutes implements Serializable{
+    JTable rutas;
+    DefaultTableModel modeloTabla = new DefaultTableModel(new Object[]{"ID", "INICIO", "FIN", "Distancia"}, 0);
     ArrayList<RegistroCSV> registros = new ArrayList<>();
     private static File selectedFile;
     public ArrayList<String> inicios = new ArrayList<>();
     public ArrayList<String> finals = new ArrayList<>();
 
     public void setTripsPanel(TripsPanel tripsPanel) {
-        this.tripsPanel = tripsPanel;
     }
 
 
-    public class SubirCSV extends JPanel implements ActionListener {
+    public class SubirCSV extends JPanel implements ActionListener  {
         
         JButton button = new JButton("Subir Archivo (CSV)");
-            JTable rutas;
+            
+            
             JButton editButton = new JButton("Editar Distancia");
             JButton addButton = new JButton("Agregar Ruta");
             JButton deleteButton = new JButton("Eliminar Ruta");
@@ -42,7 +43,7 @@ public class TableRutes {
                 this.add(buttonPanel, BorderLayout.NORTH); // Añade el panel del botón en la parte superior
 
                 // Crea el modelo de la tabla con las columnas especificadas
-                DefaultTableModel modeloTabla = new DefaultTableModel(new Object[]{"ID", "INICIO", "FIN", "Distancia"}, 0);
+                
                 rutas = new JTable(modeloTabla);
 
                 // Personaliza la fuente de la tabla y el encabezado
@@ -143,19 +144,12 @@ public class TableRutes {
         }
 
 
-    private void llenarTablaDesdeRegistros() {
-    inicios.clear();
-    finals.clear();
-    DefaultTableModel modelo = (DefaultTableModel) rutas.getModel();
-    modelo.setRowCount(0);
-    for (RegistroCSV registro : registros) {
-        modelo.addRow(new Object[]{registro.getId(), registro.getInicio(), registro.getFin(), registro.getDistancia()});
-        inicios.add(registro.getInicio());
-        finals.add(registro.getFin()); // Aquí estaba el error, ahora está corregido
-        System.out.println("Finales " + finals);
-        System.out.println("Inicios " + inicios);
+
+    
+    public void cargarRegistros(ArrayList<RegistroCSV> nuevosRegistros) {
+        registros = nuevosRegistros; // Reemplaza los registros actuales con los nuevos
+        llenarTablaDesdeRegistros(); // Actualiza la tabla UI
     }
-}
 
     private void mostrarDialogoEdicion() {
         JTextField idField = new JTextField(5);
@@ -257,12 +251,10 @@ private void agregarRuta(String inicio, String fin, String distancia) {
         JOptionPane.showMessageDialog(this, "No se encontró una ruta con el ID: " + id, "Error", JOptionPane.ERROR_MESSAGE);
     }
     }
-    public ArrayList<RegistroCSV> getRegistros(){
-        return registros;
-    }
+
 
 }
-        public void ajustarAnchoColumnas(JTable tabla) {
+    public void ajustarAnchoColumnas(JTable tabla) {
         // Asegura que el layout de la tabla esté actualizado para medir correctamente el contenido.
         tabla.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         final TableColumnModel columnModel = tabla.getColumnModel();
@@ -287,5 +279,29 @@ private void agregarRuta(String inicio, String fin, String distancia) {
             columnModel.getColumn(columna).setPreferredWidth(anchoMaximo);
         }
     }
+    public  void cargarRegistros(ArrayList<RegistroCSV> nuevosRegistros) {
+        this.registros = nuevosRegistros; // Actualiza la lista de registros
+        llenarTablaDesdeRegistros(); // Llena la tabla de la UI con los nuevos datos
+    }
+
+    public ArrayList<RegistroCSV> getRegistros(){
+            return registros;
+        }
+    public void llenarTablaDesdeRegistros() {
+    inicios.clear();
+    finals.clear();
+    DefaultTableModel modelo = (DefaultTableModel) rutas.getModel();
+    
+    modelo.setRowCount(0);
+    for (RegistroCSV registro : registros) {
+        modelo.addRow(new Object[]{registro.getId(), registro.getInicio(), registro.getFin(), registro.getDistancia()});
+        inicios.add(registro.getInicio());
+        finals.add(registro.getFin()); // Aquí estaba el error, ahora está corregido
+        System.out.println("Finales " + finals);
+        System.out.println("Inicios " + inicios);
+        ajustarAnchoColumnas(rutas);
+    }
+}
+
 }    
        

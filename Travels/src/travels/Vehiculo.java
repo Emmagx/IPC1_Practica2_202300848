@@ -1,8 +1,9 @@
 package travels;
 
+import java.io.Serializable;
 import javax.swing.ImageIcon;
 
-public class Vehiculo {
+public class Vehiculo implements Serializable{
     private String tipo;
     private double gastoCombustible; // galones por kilómetro
     private int capacidadTanque; // capacidad en galones

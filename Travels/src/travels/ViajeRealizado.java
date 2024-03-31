@@ -1,10 +1,11 @@
 package travels;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.table.DefaultTableModel;
 
-public class ViajeRealizado {
+public class ViajeRealizado implements Serializable{
 
     private final ArrayList<Viaje> historialViajes;
     private final String[] columnNames = {"ID", "Fecha y Hora Inicio", "Fecha y Hora Fin", "Distancia (km)", "Vehículo", "Gasolina Consumida"};

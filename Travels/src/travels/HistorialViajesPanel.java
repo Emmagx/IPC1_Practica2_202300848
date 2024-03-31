@@ -4,9 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
+import java.util.Date;
+import java.io.Serializable;
 
-
-public class HistorialViajesPanel extends JPanel {
+public class HistorialViajesPanel extends JPanel implements Serializable {
     TableRutes tableRutes = new TableRutes();
     private JTable historialTable;
     private DefaultTableModel tableModel;
@@ -59,4 +60,41 @@ public class HistorialViajesPanel extends JPanel {
             agregarViajeATabla(viaje); // Add each trip to the table
         }
     }
+    public ArrayList<ViajeRealizado.Viaje> getHistorial() {
+        ArrayList<ViajeRealizado.Viaje> listaViajes = new ArrayList<>();
+        
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            // Asumiendo que tienes un constructor en tu clase Viaje que acepta estos parámetros.
+            // Deberás convertir o parsear cada objeto a su tipo correspondiente si es necesario.
+            String id = (String) tableModel.getValueAt(i, 0);
+            Date fechaHoraInicio = (Date) tableModel.getValueAt(i, 1);
+            Date fechaHoraFin = (Date) tableModel.getValueAt(i, 2);
+            String distancia = (String) tableModel.getValueAt(i, 3);
+//            String tipoVehiculo = (String) tableModel.getValueAt(i, 4);
+            Vehiculo vehiculo = (Vehiculo)tableModel.getValueAt(i, 4);
+            double gasolinaConsumida = Double.parseDouble((String) tableModel.getValueAt(i, 5));
+            
+            // Crear un nuevo objeto Viaje con los datos obtenidos y añadirlo a la lista.
+            ViajeRealizado.Viaje nuevoViaje = new ViajeRealizado.Viaje(id, null, null, distancia, vehiculo, fechaHoraInicio, fechaHoraFin, gasolinaConsumida);
+            listaViajes.add(nuevoViaje);
+        }
+        
+        return listaViajes;
+    }
+    public void cargarHistorial(ArrayList<ViajeRealizado.Viaje> historialViajes) {
+    DefaultTableModel modelo = (DefaultTableModel) historialTable.getModel();
+    modelo.setRowCount(0); // Limpia la tabla
+    
+    // Itera sobre la lista de viajes y añade cada uno al modelo de la tabla
+    for (ViajeRealizado.Viaje viaje : historialViajes) {
+        modelo.addRow(new Object[]{
+            viaje.getId(),
+            viaje.getFechaHoraInicio().toString(),
+            viaje.getFechaHoraFin().toString(),
+            viaje.getDistancia(),
+            viaje.getVehiculo().getTipo(),
+            String.valueOf(viaje.getGasolinaConsumida())
+        });
+    }
+}
 }

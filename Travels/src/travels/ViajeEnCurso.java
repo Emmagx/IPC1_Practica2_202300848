@@ -5,7 +5,8 @@ import java.awt.image.BufferedImage;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.Date;
-public class ViajeEnCurso extends JPanel {
+import java.io.Serializable;
+public class ViajeEnCurso extends JPanel implements Serializable{
     private ImageIcon imagenVehiculo;
     private volatile int xPosition = 600; // Posición inicial
     private final String inicioRuta, finRuta, tipoVehiculo, distanciaTotal;
