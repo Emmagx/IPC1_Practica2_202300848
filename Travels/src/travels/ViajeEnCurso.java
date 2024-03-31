@@ -10,7 +10,7 @@ public class ViajeEnCurso extends JPanel implements Serializable{
     private ImageIcon imagenVehiculo;
     private volatile int xPosition = 600; // Posición inicial
     private final String inicioRuta, finRuta, tipoVehiculo, distanciaTotal;
-    private int velocidad;
+    private Double velocidad;
     private AtomicBoolean enMovimiento = new AtomicBoolean(true);
     private SimpleDateFormat sdf = new SimpleDateFormat("MMM dd HH:mm:ss");
     private int animacionDireccion = -1;
@@ -44,14 +44,14 @@ public void iniciarAnimacion() {
         animacionDireccion *= -1; // Invierte la dirección de la animación
         
     }
-    Thread animacionThread = new Thread(() -> {
+Thread animacionThread = new Thread(() -> {
         while (animacionDireccion == -1 && xPosition > 30 || animacionDireccion == 1 && xPosition < getWidth() - 30 - imagenVehiculo.getIconWidth() / 10) {
-            xPosition += animacionDireccion;
+            xPosition += animacionDireccion; // Ajusta este valor para cambiar la "velocidad" de desplazamiento de la imagen
             try {
-                Thread.sleep(velocidad);
+                Thread.sleep(velocidad.longValue()); // Convierte velocidad a long
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                return; // Termina el hilo si es interrumpido durante el sueño
+                return; // Sale del hilo si se interrumpe
             }
             repaint();
         }
@@ -94,9 +94,10 @@ protected void paintComponent(Graphics g) {
 }
 
 
-    private int calcularVelocidad(String distancia) {
-        int distanciaNumerica = Integer.parseInt(distancia.replaceAll("[^0-9]", ""));
-//        return Math.max(100, distanciaNumerica/100000 ); velocidad normal
-          return Math.max(10, distanciaNumerica/100000 ); //velocidad pruebas
+    private double calcularVelocidad(String distancia) {
+        double distanciaNumerica = Double.parseDouble(distancia.replaceAll("[^0-9.]", "")); // Asegúrate de remover correctamente los caracteres no numéricos
+        // Ajusta la fórmula para calcular la velocidad en función de la distancia
+        // Esta fórmula es un ejemplo y puede ser ajustada según necesites
+        return Math.max(50, distanciaNumerica * 800 / 500 ); // Aumenta el denominador para disminuir la velocidad
     }
 }

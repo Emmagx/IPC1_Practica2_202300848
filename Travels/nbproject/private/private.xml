@@ -5,10 +5,14 @@
         <group>
             <file>file:/D:/GITHUB/IPC1_Practica2_202300848/Travels/src/travels/TripsPanel.java</file>
             <file>file:/D:/GITHUB/IPC1_Practica2_202300848/Travels/src/travels/Vehiculo.java</file>
+            <file>file:/D:/GITHUB/IPC1_Practica2_202300848/Travels/src/travels/ViajeEnCurso.java</file>
             <file>file:/D:/GITHUB/IPC1_Practica2_202300848/Travels/src/travels/VehiculoManager.java</file>
             <file>file:/D:/GITHUB/IPC1_Practica2_202300848/Travels/src/travels/TableRutes.java</file>
+            <file>file:/D:/GITHUB/IPC1_Practica2_202300848/Travels/src/travels/ViajeRealizado.java</file>
             <file>file:/D:/GITHUB/IPC1_Practica2_202300848/Travels/src/travels/RegistroCSV.java</file>
             <file>file:/D:/GITHUB/IPC1_Practica2_202300848/Travels/src/travels/Travels.java</file>
+            <file>file:/D:/GITHUB/IPC1_Practica2_202300848/Travels/src/travels/HistorialViajesPanel.java</file>
+            <file>file:/D:/GITHUB/IPC1_Practica2_202300848/Travels/src/travels/EstadoAplicacion.java</file>
             <file>file:/D:/GITHUB/IPC1_Practica2_202300848/Travels/src/travels/GUI.java</file>
         </group>
     </open-files>
