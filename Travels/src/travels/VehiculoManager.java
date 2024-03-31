@@ -34,4 +34,24 @@ public class VehiculoManager {
     public static List<Vehiculo> getVehiculos() {
         return vehiculos;
     }
+    
+    public static Vehiculo buscarVehiculoPorTipo(String tipoVehiculo) {
+    for (Vehiculo vehiculo : vehiculos) {
+        if (vehiculo.getTipo().equals(tipoVehiculo) && vehiculo.isDisponible()) {
+            vehiculo.setDisponible(false); // El vehículo ya no está disponible porque se usará para el viaje
+            return vehiculo;
+        }
+    }
+    return null; // No se encontró un vehículo disponible de ese tipo
+}
+    
+    public static ArrayList<Vehiculo> obtenerVehiculosDisponibles() {
+    ArrayList<Vehiculo> disponibles = new ArrayList<>();
+    for (Vehiculo vehiculo : vehiculos) {
+        if (vehiculo.isDisponible()) {
+            disponibles.add(vehiculo);
+        }
+    }
+    return disponibles;
+}
 }

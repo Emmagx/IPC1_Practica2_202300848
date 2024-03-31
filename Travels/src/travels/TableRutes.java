@@ -22,6 +22,7 @@ public class TableRutes {
         this.tripsPanel = tripsPanel;
     }
 
+
     public class SubirCSV extends JPanel implements ActionListener {
         
         JButton button = new JButton("Subir Archivo (CSV)");
@@ -34,7 +35,7 @@ public class TableRutes {
 
                 this.setLayout(new BorderLayout(10, 10)); // Usa BorderLayout con espacios
                 button.addActionListener(this);
-
+                
                 JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); // Panel para el botón
                 buttonPanel.add(button);
 
@@ -140,33 +141,9 @@ public class TableRutes {
     ajustarAnchoColumnas(rutas);
 
         }
-    public void ajustarAnchoColumnas(JTable tabla) {
-        // Asegura que el layout de la tabla esté actualizado para medir correctamente el contenido.
-        tabla.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        final TableColumnModel columnModel = tabla.getColumnModel();
-        for (int columna = 0; columna < tabla.getColumnCount(); columna++) {
-            int anchoMaximo = 50; // Ancho mínimo de la columna
-            for (int fila = 0; fila < tabla.getRowCount(); fila++) {
-                TableCellRenderer cellRenderer = tabla.getCellRenderer(fila, columna);
-                Component c = tabla.prepareRenderer(cellRenderer, fila, columna);
-                int ancho = c.getPreferredSize().width + tabla.getIntercellSpacing().width;
-                anchoMaximo = Math.max(anchoMaximo, ancho);
-            }
-            // Considera el ancho del encabezado de la columna
-            TableColumn columnaTabla = columnModel.getColumn(columna);
-            TableCellRenderer headerRenderer = columnaTabla.getHeaderRenderer();
-            if (headerRenderer == null) {
-                headerRenderer = tabla.getTableHeader().getDefaultRenderer();
-            }
-            Component componenteEncabezado = headerRenderer.getTableCellRendererComponent(tabla, columnaTabla.getHeaderValue(), false, false, 0, columna);
-            anchoMaximo = Math.max(anchoMaximo, componenteEncabezado.getPreferredSize().width);
 
-            // Configura el ancho preferido de la columna
-            columnModel.getColumn(columna).setPreferredWidth(anchoMaximo);
-        }
-    }
 
-private void llenarTablaDesdeRegistros() {
+    private void llenarTablaDesdeRegistros() {
     inicios.clear();
     finals.clear();
     DefaultTableModel modelo = (DefaultTableModel) rutas.getModel();
@@ -285,5 +262,30 @@ private void agregarRuta(String inicio, String fin, String distancia) {
     }
 
 }
+        public void ajustarAnchoColumnas(JTable tabla) {
+        // Asegura que el layout de la tabla esté actualizado para medir correctamente el contenido.
+        tabla.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        final TableColumnModel columnModel = tabla.getColumnModel();
+        for (int columna = 0; columna < tabla.getColumnCount(); columna++) {
+            int anchoMaximo = 50; // Ancho mínimo de la columna
+            for (int fila = 0; fila < tabla.getRowCount(); fila++) {
+                TableCellRenderer cellRenderer = tabla.getCellRenderer(fila, columna);
+                Component c = tabla.prepareRenderer(cellRenderer, fila, columna);
+                int ancho = c.getPreferredSize().width + tabla.getIntercellSpacing().width;
+                anchoMaximo = Math.max(anchoMaximo, ancho);
+            }
+            // Considera el ancho del encabezado de la columna
+            TableColumn columnaTabla = columnModel.getColumn(columna);
+            TableCellRenderer headerRenderer = columnaTabla.getHeaderRenderer();
+            if (headerRenderer == null) {
+                headerRenderer = tabla.getTableHeader().getDefaultRenderer();
+            }
+            Component componenteEncabezado = headerRenderer.getTableCellRendererComponent(tabla, columnaTabla.getHeaderValue(), false, false, 0, columna);
+            anchoMaximo = Math.max(anchoMaximo, componenteEncabezado.getPreferredSize().width);
+
+            // Configura el ancho preferido de la columna
+            columnModel.getColumn(columna).setPreferredWidth(anchoMaximo);
+        }
+    }
 }    
        

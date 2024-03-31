@@ -100,4 +100,8 @@ public class Vehiculo {
     public void finalizarViaje() {
         setDisponible(true); // El vehículo está disponible de nuevo
     }
+    @Override
+    public String toString() {
+        return tipo; // Así es como el JComboBox mostrará cada vehículo.
+    }
 }

@@ -3,69 +3,93 @@ package travels;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
+import java.util.Date;
 public class TripsPanel extends JPanel {
-    private JButton btnEmpezarViaje = new JButton("Empezar Viaje");
+    private JButton btnEmpezarViaje;
     private TableRutes tableRutes;
-    String puntoInicialSeleccionado, puntoFinalSeleccionado, tipoTransporteSeleccionado;
+    private JPanel viajePanel1, viajePanel2, viajePanel3;
+    private SimpleDateFormat sdf = new SimpleDateFormat("MMM dd HH:mm:ss");
+    private int position = -80; 
     public TripsPanel(TableRutes tableRutes) {
         this.tableRutes = tableRutes;
         inicializarComponentes();
     }
-
+    
+    
     private void inicializarComponentes() {
-        this.setLayout(new FlowLayout());
-        btnEmpezarViaje.addActionListener(e -> abrirVentanaConfiguracionViaje());
-        add(btnEmpezarViaje);
-    }
-
-    private void abrirVentanaConfiguracionViaje() {
-        JDialog dialog = new JDialog();
-        dialog.setTitle("Configuración del Viaje");
-        dialog.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(5, 10, 5, 10); // Margen para los componentes
-
-        JComboBox<String> cbPuntoInicial = new JComboBox<>(tableRutes.inicios.toArray(new String[0]));
-        JComboBox<String> cbPuntoFinal = new JComboBox<>(tableRutes.finals.toArray(new String[0]));
-        JComboBox<String> cbTipoTransporte = new JComboBox<>(getTipoTransporteOptions());
-
-        dialog.add(new JLabel("Punto Inicial:"), gbc);
-        dialog.add(cbPuntoInicial, gbc);
-        dialog.add(new JLabel("Punto Final:"), gbc);
-        dialog.add(cbPuntoFinal, gbc);
-        dialog.add(new JLabel("Tipo de Transporte:"), gbc);
-        dialog.add(cbTipoTransporte, gbc);
-
-        JButton btnGenerarViaje = new JButton("Generar Viaje");
-        btnGenerarViaje.addActionListener(e -> {
-            puntoInicialSeleccionado = (String) cbPuntoInicial.getSelectedItem();
-            puntoFinalSeleccionado = (String) cbPuntoFinal.getSelectedItem();
-            tipoTransporteSeleccionado = (String) cbTipoTransporte.getSelectedItem();
-            System.out.println("Inicio: " + puntoInicialSeleccionado + " Final: " + puntoFinalSeleccionado + " Vehiculo: " + tipoTransporteSeleccionado);
-            if (rutaExiste(puntoInicialSeleccionado, puntoFinalSeleccionado)) {
-            // La ruta existe, puedes seguir con la lógica para generar el viaje
-            System.out.println("Inicio: " + puntoInicialSeleccionado + " Final: " + puntoFinalSeleccionado + " Vehículo: " + tipoTransporteSeleccionado);
-            JOptionPane.showMessageDialog(dialog, "Viaje generado correctamente.");
-            dialog.dispose(); // Cierra la ventana de diálogo
-            } else {
-            // La ruta no existe, mostrar mensaje de error
-            JOptionPane.showMessageDialog(dialog, "No existe una ruta entre los puntos seleccionados.", "Error", JOptionPane.ERROR_MESSAGE);
-            // No se cierra la ventana de diálogo, permitiendo al usuario intentar de nuevo
-        }
+        setLayout(null); // Usando null layout para posiciones absolutas
         
-        });
-        dialog.add(btnGenerarViaje, gbc);
+        btnEmpezarViaje = new JButton("Empezar Viaje");
+        btnEmpezarViaje.setBounds(300, 10, 150, 30); // Posición x, y y tamaño ancho, alto
+        add(btnEmpezarViaje);
 
-        dialog.pack(); // Ajusta el tamaño de la ventana al contenido
-        dialog.setLocationRelativeTo(null); // Centra la ventana
-        dialog.setModal(true); // Hace que la ventana bloqueé el acceso a la ventana principal
-        dialog.setVisible(true); // Muestra la ventana
+        // Asegúrate de que el botón de empezar viaje tenga un ActionListener para abrir la ventana de configuración
+        btnEmpezarViaje.addActionListener(this::abrirVentanaConfiguracionViaje);
+    }
+    
+
+        private void abrirVentanaConfiguracionViaje(ActionEvent e) {
+            JDialog dialog = new JDialog((Frame) null, "Configuración del Viaje", true);
+            dialog.setLayout(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+
+            gbc.gridwidth = GridBagConstraints.REMAINDER;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.insets = new Insets(5, 10, 5, 10);
+
+            JComboBox<String> cbPuntoInicial = new JComboBox<>(tableRutes.inicios.toArray(new String[0]));
+            JComboBox<String> cbPuntoFinal = new JComboBox<>(tableRutes.finals.toArray(new String[0]));
+            JComboBox<Vehiculo> cbTipoTransporte = new JComboBox<>(
+                    new DefaultComboBoxModel<>(
+                            VehiculoManager.obtenerVehiculosDisponibles().toArray(new Vehiculo[0])));
+
+            dialog.add(new JLabel("Punto Inicial:"), gbc);
+            dialog.add(cbPuntoInicial, gbc);
+            dialog.add(new JLabel("Punto Final:"), gbc);
+            dialog.add(cbPuntoFinal, gbc);
+            dialog.add(new JLabel("Tipo de Transporte:"), gbc);
+            dialog.add(cbTipoTransporte, gbc);
+
+            JButton btnGenerarViaje = new JButton("Generar Viaje");
+            btnGenerarViaje.addActionListener(event -> generarViaje(
+                    cbPuntoInicial, cbPuntoFinal, cbTipoTransporte, dialog));
+            dialog.add(btnGenerarViaje, gbc);
+
+            dialog.pack();
+            dialog.setLocationRelativeTo(this);
+            dialog.setVisible(true);
     }
 
+        private void generarViaje(JComboBox<String> cbPuntoInicial,
+            JComboBox<String> cbPuntoFinal,
+            JComboBox<Vehiculo> cbTipoTransporte,
+            JDialog dialog) {
+            String puntoInicialSeleccionado = (String) cbPuntoInicial.getSelectedItem();
+            String puntoFinalSeleccionado = (String) cbPuntoFinal.getSelectedItem();
+            Vehiculo vehiculoSeleccionado = (Vehiculo) cbTipoTransporte.getSelectedItem();
+
+            if (rutaExiste(puntoInicialSeleccionado, puntoFinalSeleccionado) && vehiculoSeleccionado != null) {
+                position += 130;
+                RegistroCSV ruta = registroID(puntoInicialSeleccionado, puntoFinalSeleccionado);
+                vehiculoSeleccionado.setDisponible(false);
+                actualizarListaVehiculos(cbTipoTransporte);
+                JOptionPane.showMessageDialog(dialog, "Viaje generado correctamente.");
+                dialog.dispose();
+                String fechaHoraActual = sdf.format(new Date());
+                System.out.println("Viaje iniciado en: " + fechaHoraActual);
+                // Aquí deberías agregar el panel del viaje generado a uno de los paneles vacíos
+                JPanel Panel = crearPanelViaje(ruta, vehiculoSeleccionado);
+                add(Panel);
+                Panel.setBounds(0, position, 800, 200);
+                revalidate();
+                repaint();
+            } else {
+                JOptionPane.showMessageDialog(dialog, "No existe una ruta entre los puntos seleccionados.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+    }
+        
     private String[] getTipoTransporteOptions() {
         ArrayList<Vehiculo> vehiculos = (ArrayList<Vehiculo>) VehiculoManager.getVehiculos();
         String[] tipos = new String[vehiculos.size()];
@@ -75,12 +99,29 @@ public class TripsPanel extends JPanel {
         return tipos;
     }
     private boolean rutaExiste(String inicio, String fin) {
-    for (RegistroCSV registro : tableRutes.registros) {
-        if (registro.getInicio().equals(inicio) && registro.getFin().equals(fin)) {
-            return true; // La ruta existe
-        }
+        return tableRutes.registros.stream()
+                .anyMatch(registro -> registro.getInicio().equals(inicio) && registro.getFin().equals(fin));
     }
-    return false; // No se encontró la ruta
+    private RegistroCSV registroID(String inicio, String fin) {
+        return tableRutes.registros.stream()
+                .filter(registro -> registro.getInicio().equals(inicio) && registro.getFin().equals(fin))
+                .findFirst().orElse(null);
+    }
+    private void actualizarListaVehiculos(JComboBox<Vehiculo> cbTipoTransporte) {
+            ArrayList<Vehiculo> vehiculosDisponibles = VehiculoManager.obtenerVehiculosDisponibles();
+            cbTipoTransporte.setModel(new DefaultComboBoxModel<>(vehiculosDisponibles.toArray(Vehiculo[]::new)));
+        }
+private JPanel crearPanelViaje(RegistroCSV ruta, Vehiculo vehiculo) {
+
+    
+    JPanel panelViaje = new JPanel();
+    JPanel detallesPanel = new JPanel();
+    panelViaje.add(detallesPanel);
+    ViajeEnCurso animacionViaje = new ViajeEnCurso(vehiculo, ruta.getInicio(), ruta.getFin(), ruta.getDistancia());
+    panelViaje.add(animacionViaje);
+
+    return panelViaje;
 }
+
 
 }
