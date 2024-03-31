@@ -116,6 +116,7 @@ public class TripsPanel extends JPanel implements Serializable {
     }
 
     private JPanel crearPanelViaje(RegistroCSV ruta, Vehiculo vehiculo) {
+        
         JPanel panelViaje = new JPanel();
         JPanel detallesPanel = new JPanel();
         panelViaje.add(detallesPanel);

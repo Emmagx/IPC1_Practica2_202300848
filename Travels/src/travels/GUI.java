@@ -33,6 +33,7 @@ public class GUI extends JFrame {
     if (estadoCargado != null) {
         tableRutes.cargarRegistros(estadoCargado.getRegistrosRutas());
         historial.cargarHistorial(estadoCargado.getHistorialViajes());
+        tableRutes.setRutaArchivoSeleccionado(estadoCargado.getRutaArchivoCSV());
     } else {
         // Aquí inicializas tus tablas para empezar con ellas vacías si no hay datos guardados
         tableRutes.cargarRegistros(new ArrayList<>());
@@ -40,16 +41,16 @@ public class GUI extends JFrame {
     }
 
         // Guardar estado al cerrar
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                // Aquí capturamos el estado actual antes de cerrar
-                ArrayList<RegistroCSV> registrosActuales = tableRutes.getRegistros();
-                ArrayList<ViajeRealizado.Viaje> historialActuales = historial.getHistorial();
-                EstadoAplicacion estado = new EstadoAplicacion(registrosActuales, historialActuales);
-                Travels.guardarEstado(estado, "estadoAplicacion.bin");
-            }
-        });
+addWindowListener(new WindowAdapter() {
+    @Override
+        public void windowClosing(WindowEvent e) {
+            ArrayList<RegistroCSV> registrosActuales = tableRutes.getRegistros();
+            ArrayList<ViajeRealizado.Viaje> historialActuales = historial.getHistorial();
+            String rutaArchivo = tableRutes.getRutaArchivoSeleccionado(); // Asume este método en TableRutes
+            EstadoAplicacion estado = new EstadoAplicacion(registrosActuales, historialActuales, rutaArchivo);
+            Travels.guardarEstado(estado, "estadoAplicacion.bin");
+        }
+    });
 
         setVisible(true);
     }
@@ -57,6 +58,7 @@ public class GUI extends JFrame {
         // Agrega a los registros y al historial
         EstadoAplicacion estado = null;
         estado.getRegistrosRutas().add(nuevoRegistro);
+        
         estado.getHistorialViajes().add(nuevoViaje);
 
         // Actualiza las tablas

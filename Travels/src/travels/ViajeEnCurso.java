@@ -6,9 +6,11 @@ import java.text.SimpleDateFormat;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.Date;
 import java.io.Serializable;
+
 public class ViajeEnCurso extends JPanel implements Serializable{
     private ImageIcon imagenVehiculo;
-    private volatile int xPosition = 600; // Posición inicial
+    private boolean primeraVezIniciado = false;
+    private volatile int xPosition = 620; // Posición inicial
     private final String inicioRuta, finRuta, tipoVehiculo, distanciaTotal;
     private Double velocidad;
     private AtomicBoolean enMovimiento = new AtomicBoolean(true);
@@ -23,29 +25,39 @@ public class ViajeEnCurso extends JPanel implements Serializable{
         this.distanciaTotal = distancia;
         this.velocidad = calcularVelocidad(distancia);
         
-        setPreferredSize(new Dimension(800, 100));
+        setPreferredSize(new Dimension(800, 200));
         setBackground(Color.WHITE);
-        
-        JLabel labelFinalRuta = new JLabel("Punto final de la ruta: " + inicioRuta);
-        JLabel labelDistancia = new JLabel("Distancia de la ruta: " + distancia);
+        setLayout(null);
+        JLabel labelFinalRuta = new JLabel("fin: " + finRuta);
+        JLabel labelDistancia = new JLabel("Distancia: " + distancia);
         this.add(labelFinalRuta);
         this.add(labelDistancia);
-        
-        JButton iniciarViajeButton = new JButton("Iniciar Viaje");
+        labelFinalRuta.setBounds(5, 0, 100, 20);
+        labelDistancia.setBounds(5, 22, 100, 20);
+        JLabel labelinicio = new JLabel("Inicio: " + inicioRuta);
+        this.add(labelinicio);
+        labelinicio.setBounds(670, 0, 130, 20);
+        JButton iniciarViajeButton = new JButton("Iniciar");        
         invertirImagen(); // Invierte la imagen
         iniciarViajeButton.addActionListener(e -> iniciarAnimacion());
         this.add(iniciarViajeButton);
+        iniciarViajeButton.setBounds(670, 20, 70, 20);//x,y,w,h
     }
+    
 
 public void iniciarAnimacion() {
-    
+    if (!primeraVezIniciado) {
+        // La primera vez que se inicia la animación, establece la velocidad
+        velocidad = calcularVelocidad(distanciaTotal);
+        primeraVezIniciado = true; // Marca que ya se inició por primera vez
+    }
     if (!enMovimiento.getAndSet(true)) {
         invertirImagen(); // Invierte la imagen
         animacionDireccion *= -1; // Invierte la dirección de la animación
         
     }
 Thread animacionThread = new Thread(() -> {
-        while (animacionDireccion == -1 && xPosition > 30 || animacionDireccion == 1 && xPosition < getWidth() - 30 - imagenVehiculo.getIconWidth() / 10) {
+        while (animacionDireccion == -1 && xPosition > 110 || animacionDireccion == 1 && xPosition < getWidth() - 110 - imagenVehiculo.getIconWidth() / 10) {
             xPosition += animacionDireccion; // Ajusta este valor para cambiar la "velocidad" de desplazamiento de la imagen
             try {
                 Thread.sleep(velocidad.longValue()); // Convierte velocidad a long
@@ -84,9 +96,9 @@ protected void paintComponent(Graphics g) {
     // Dibuja la imagen estática en la última posición si la animación está detenida
     if (!enMovimiento.get()) {
         if (animacionDireccion == -1) {
-            xPosition = 30; // Si la dirección es hacia la izquierda, ajusta a la posición inicial
+            xPosition = 80; // Si la dirección es hacia la izquierda, ajusta a la posición inicial
         } else {
-            xPosition = getWidth() - 30 - imageWidth; // Si la dirección es hacia la derecha, ajusta a la posición final
+            xPosition = 620; // Si la dirección es hacia la derecha, ajusta a la posición final
         }
     }
 
