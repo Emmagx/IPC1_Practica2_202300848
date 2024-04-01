@@ -10,7 +10,7 @@ public class TripsPanel extends JPanel implements Serializable {
     private JButton btnEmpezarViaje;
     private TableRutes tableRutes;
     private JPanel viajePanel1, viajePanel2, viajePanel3;
-
+    private HistorialViajesPanel historialPanel = new HistorialViajesPanel();
     private int position = -80;
     private VehiculoManager vehiculoManager; // Instancia de VehiculoManager
 
@@ -122,9 +122,10 @@ public class TripsPanel extends JPanel implements Serializable {
         panelViaje.add(detallesPanel);
         panelViaje.setBackground(Color.WHITE);
         detallesPanel.setBackground(Color.WHITE);
-        ViajeEnCurso animacionViaje = new ViajeEnCurso(vehiculo, ruta.getInicio(), ruta.getFin(), ruta.getDistancia());
+        ViajeEnCurso animacionViaje = new ViajeEnCurso(vehiculo, ruta.getInicio(), ruta.getFin(), ruta.getDistancia(), historialPanel);
         panelViaje.add(animacionViaje);
 
         return panelViaje;
     }
+    
 }
