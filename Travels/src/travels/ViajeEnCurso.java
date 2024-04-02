@@ -21,6 +21,7 @@ public class ViajeEnCurso extends JPanel implements Serializable {
     private volatile int xPosition = 620; // Posición inicial
     private final String inicioRuta, finRuta, tipoVehiculo, distanciaTotal;
     private Double velocidad;
+    
     private AtomicBoolean enMovimiento = new AtomicBoolean(false);
     private int animacionDireccion = -1; // Define la dirección inicial de la animación para ir hacia la izquierda
     private JButton btnRecargarCombustible;
@@ -127,14 +128,30 @@ private void ejecutarAnimacion(double pixelsPerFrame) {
             try {
                 Thread.sleep(velocidad.longValue());
             } catch (InterruptedException e) {
+
                 Thread.currentThread().interrupt();
+                
                 enMovimiento.set(false);
             }
         }
+           System.out.println("Fin Hilo y Actualizando");
+                ViajeRealizado.Viaje nuevoViaje = new ViajeRealizado.Viaje(
+                inicioRuta,
+                finRuta,
+                distanciaTotal,
+                vehiculo,
+                fechaHoraInicio,
+                fechaHoraFin,
+                gasolinaConsumida
+            );
 
-        // Registro del viaje una vez completado el recorrido
-        fechaHoraFin = new Date(); // Marcamos el fin del viaje
-        registrarViajeFinalizado(gasolinaConsumida);
+            // Luego llamas a agregarViajeYActualizarTabla
+            SwingUtilities.invokeLater(() -> {
+                System.out.println("Actualizar Tabla");
+                historialPanel.agregarViajeYActualizarTabla(nuevoViaje);
+            });
+
+
 
         enMovimiento.set(false); // Aseguramos que la animación se marque como detenida al final
     }, "Animacion-Viaje");
@@ -142,7 +159,6 @@ private void ejecutarAnimacion(double pixelsPerFrame) {
 }
 public void registrarViajeFinalizado(double gasolinaConsumidaFinal) {
     // Creamos el objeto Viaje
-    System.out.println("Añadiendo viaje a la tabla");
     ViajeRealizado.Viaje nuevoViaje = new ViajeRealizado.Viaje(
         inicioRuta,
         finRuta,
@@ -153,10 +169,15 @@ public void registrarViajeFinalizado(double gasolinaConsumidaFinal) {
         gasolinaConsumidaFinal
     );
 
-    System.out.println("Agregando viaje a la lista");
-    historialPanel.agregarViajeATabla(nuevoViaje); // ¡Esta es la clave!
-
-    // Si hay más actualizaciones que hacer, asegúrate de llamar a historialPanel.actualizarTablaConViajes(...)
+    // Aseguramos que la actualización de la UI se haga en el EDT
+    SwingUtilities.invokeLater(new Runnable() {
+        public void run() {
+            System.out.println("Añadiendo viaje a la lista y actualizando la tabla");
+            historialPanel.agregarViajeYActualizarTabla(nuevoViaje);
+            // No es necesario llamar a actualizarTabla() ya que agregarViajeYActualizarTabla ya actualiza la tabla.
+            // historialPanel.actualizarTabla(); 
+        }
+    });
 }
     
     private void invertirImagen() {
@@ -173,9 +194,9 @@ public void registrarViajeFinalizado(double gasolinaConsumidaFinal) {
         g.drawImage(imagenVehiculo.getImage(), xPosition, 30, imagenVehiculo.getIconWidth() / 10, imagenVehiculo.getIconHeight() / 10, this);
     }
 
-    private double calcularVelocidad(String distancia) {
+    private double calcularVelocidad(String distancia) {    
         double distanciaNumerica = Double.parseDouble(distancia.replaceAll("[^\\d.]", ""));
         // Esta fórmula calcula la velocidad basada en la distancia total. Puedes ajustarla según sea necesario.
-        return Math.max(50, 1000 / distanciaNumerica);
+        return Math.max(10, 0.1 / distanciaNumerica);
     }
 }

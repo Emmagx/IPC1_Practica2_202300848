@@ -1,9 +1,11 @@
 package travels;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import javax.swing.SwingUtilities;
 
 public class Travels {
@@ -12,17 +14,17 @@ public class Travels {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             EstadoAplicacion estadoCargado = cargarEstado("estadoAplicacion.bin");
+            // Si no hay estado previo cargado, inicializa uno nuevo con valores predeterminados
+            if (estadoCargado == null) {
+                estadoCargado = new EstadoAplicacion(new ArrayList<>(), new ArrayList<>(), "");
+            }
             gui = new GUI(estadoCargado);
-            setGUI(gui); // Nuevo método para establecer la referencia de GUI
+            setGUI(gui);
         });
     }
 
     public static void setGUI(GUI gui) {
         Travels.gui = gui;
-    }
-    public static void agregarNuevoViaje(RegistroCSV nuevoRegistro, ViajeRealizado.Viaje nuevoViaje) {
-        // Suponiendo que GUI tiene acceso al estado de la aplicación y puede actualizarlo
-        gui.agregarNuevoViaje(nuevoRegistro, nuevoViaje);
     }
 
     public static void guardarEstado(EstadoAplicacion estado, String archivoDestino) {
@@ -30,6 +32,7 @@ public class Travels {
             out.writeObject(estado);
         } catch (IOException e) {
             e.printStackTrace();
+            // Aquí podrías agregar lógica adicional para manejar el error, por ejemplo, mostrar un mensaje al usuario.
         }
     }
 
@@ -38,9 +41,8 @@ public class Travels {
             return (EstadoAplicacion) in.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
+            // Si hay un error al cargar, devuelve null para que se inicialice un estado nuevo
             return null;
         }
     }
-
 }
-

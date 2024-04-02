@@ -2,13 +2,15 @@ package travels;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-
 public class EstadoAplicacion implements Serializable {
     private ArrayList<RegistroCSV> registrosRutas;
     private ArrayList<ViajeRealizado.Viaje> historialViajes;
     private String rutaArchivoCSV;
+    private ArrayList<EstadoViaje> estadosViajesEnCurso;
+
     // Constructor
-    public EstadoAplicacion(ArrayList<RegistroCSV> registrosRutas, ArrayList<ViajeRealizado.Viaje> historialViajes, String rutaArchivoCSV) {
+    public EstadoAplicacion(ArrayList<RegistroCSV> registrosRutas, ArrayList<ViajeRealizado.Viaje> historialViajes,
+                            String rutaArchivoCSV) {
         this.registrosRutas = registrosRutas;
         this.historialViajes = historialViajes;
         this.rutaArchivoCSV = rutaArchivoCSV;
