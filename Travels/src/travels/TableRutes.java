@@ -302,16 +302,16 @@ private void agregarRuta(String inicio, String fin, String distancia) {
         ajustarAnchoColumnas(rutas);
     }
 }
-public void setRutaArchivoSeleccionado(String rutaArchivo) {
-        if (rutaArchivo != null && !rutaArchivo.isEmpty()) {
-            selectedFile = new File(rutaArchivo);
-        } 
-}
-public String getRutaArchivoSeleccionado() {
-        if (selectedFile != null) {
-            return selectedFile.getAbsolutePath();
-        } else {
-            return null;
-        }
+    public void setRutaArchivoSeleccionado(String rutaArchivo) {
+            if (rutaArchivo != null && !rutaArchivo.isEmpty()) {
+                selectedFile = new File(rutaArchivo);
+            } 
     }
+    public String getRutaArchivoSeleccionado() {
+            if (selectedFile != null) {
+                return selectedFile.getAbsolutePath();
+            } else {
+                return null;
+            }
+        }
 }       

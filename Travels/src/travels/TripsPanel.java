@@ -99,7 +99,7 @@ public class TripsPanel extends JPanel implements Serializable {
         }
     }
 
-    private boolean rutaExiste(String inicio, String fin) {
+        private boolean rutaExiste(String inicio, String fin) {
         return tableRutes.registros.stream()
                 .anyMatch(registro -> registro.getInicio().equals(inicio) && registro.getFin().equals(fin));
     }
